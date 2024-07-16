@@ -8,9 +8,15 @@ import TextArea from "components/ui/textarea/TextArea";
 import MainLayout from "layout/MainLayout";
 import { useForm, SubmitHandler } from "react-hook-form";
 import * as yup from "yup";
-import { storage } from '../../firebase/firebase-config';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-
+import { storage } from "../../firebase/firebase-config";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { useSelector } from "react-redux";
+import { RootState } from "redux/store";
+import { title } from "process";
+import { EPostType } from "types/enums";
+import { createPost } from "api/postApi";
+import { toast } from "react-toastify";
+import { TCommonResponse } from "types/response.type";
 
 interface FormData {
   title: string;
@@ -25,7 +31,7 @@ const schema = yup.object().shape({
 });
 
 const CreatePost: React.FC = () => {
-  const [mode, setMode] = useState<"text" | "image" | "link">("text");
+  const [mode, setMode] = useState<EPostType>(EPostType.TEXT);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
 
   const {
@@ -33,6 +39,7 @@ const CreatePost: React.FC = () => {
     control,
     register,
     watch,
+    setValue,
     formState: { isSubmitting, errors },
   } = useForm<FormData>({
     resolver: yupResolver(schema),
@@ -55,25 +62,60 @@ const CreatePost: React.FC = () => {
     const downloadURL = await getDownloadURL(storageRef);
     return downloadURL;
   };
-  
+  // const accessToken = useSelector(
+  //   (state: RootState) => state.userReducer.userInfo.accessToken ?? ""
+  // );
+
   const handleCreatePost: SubmitHandler<FormData> = async (data) => {
-      console.log(data);
-      if (data.images) {
-        try {  
-            const imageFiles = Array.from(data.images);
-            const uploadPromises = imageFiles.map(uploadImageAndGetURL);
-            const imageUrls = await Promise.all(uploadPromises);          
-            console.log("🚀 ~ consthandleCreatePost:SubmitHandler<FormData>= ~ imageUrls:", imageUrls)
-          } catch (error) {
-            console.error("Error uploading images: ", error);
-          }
+    if (data.images) {
+      try {
+        const imageFiles = Array.from(data.images);
+        const uploadPromises = imageFiles.map(uploadImageAndGetURL);
+        const imageUrl = await Promise.all(uploadPromises);
+        const postData = {
+          title: data.title,
+          imageUrl: imageUrl[0], // Assuming you only need the first image URL
+          postType: mode,
+        };
+        const response = await createPost(postData);
+        handleResponse(response);
+      } catch (error) {
+        console.error("Error uploading images: ", error);
       }
-  };
+    }
 
-  const toggleMode = (newMode: "text" | "image") => {
+    if (data.content) {
+      const postData = {
+        title: data.title,
+        content: data.content,
+        postType: mode,
+      };
+      const response = await createPost(postData);
+      handleResponse(response);
+    }
+  };
+  
+  function handleResponse(response: any) {
+    if (response && response.data.status === "CREATED") {
+      toast.success(response.data.message);
+    } else if (response && response.data.error) {
+      toast.error(response.data.error);
+    } else {
+      toast.error("An unexpected error occurred.");
+    }
+  }
+
+  const toggleMode = (newMode: EPostType) => {
     setMode(newMode);
+    if (newMode === EPostType.TEXT) {
+      // If switching to TEXT mode, clear the images
+      setSelectedImages([]);
+      setValue("images", undefined); // Assuming you're using React Hook Form
+    } else if (newMode === EPostType.IMAGE) {
+      // If switching to IMAGE mode, clear the content
+      setValue("content", ""); // Assuming you're using React Hook Form
+    }
   };
-
 
   return (
     <MainLayout>
@@ -83,21 +125,21 @@ const CreatePost: React.FC = () => {
           <div className="flex items-center gap-3">
             <span
               className={`${
-                mode === "text"
+                mode === EPostType.TEXT
                   ? "border-b-2 border-b-primary  cursor-pointer"
                   : "cursor-pointer"
               }`}
-              onClick={() => toggleMode("text")}
+              onClick={() => toggleMode(EPostType.TEXT)}
             >
               Text
             </span>
             <span
               className={`${
-                mode === "image"
+                mode === EPostType.IMAGE
                   ? "border-b-2 border-b-primary cursor-pointer"
                   : "cursor-pointer"
               }`}
-              onClick={() => toggleMode("image")}
+              onClick={() => toggleMode(EPostType.IMAGE)}
             >
               Image & Videos
             </span>
@@ -115,7 +157,7 @@ const CreatePost: React.FC = () => {
                   error={errors.title?.message}
                 ></Input>
               </FormGroup>
-              {mode === "text" && (
+              {mode === EPostType.TEXT && (
                 <FormGroup>
                   <Label htmlFor="content">
                     Content <span className="text-red-500">*</span>
@@ -128,7 +170,7 @@ const CreatePost: React.FC = () => {
                   ></TextArea>
                 </FormGroup>
               )}
-              {mode === "image" && (
+              {mode === EPostType.IMAGE && (
                 <FormGroup>
                   <Label>
                     Upload Images <span className="text-red-500">*</span>

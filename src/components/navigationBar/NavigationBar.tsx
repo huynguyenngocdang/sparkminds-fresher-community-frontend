@@ -3,6 +3,7 @@ import { RedditIcon, RedditText, UserProfileIcon } from "components/icons";
 import CreateButton from "components/ui/button/CreateButton";
 import { NavLink } from "react-router-dom";
 import { ROUTE_HOME, ROUTE_LOGIN, ROUTE_POST_CREATE } from "constants/WebPath";
+import { toast } from "react-toastify";
 
 const NavigationBar = () => {
   const [isDropdownVisible, setIsDropdownVisible] = useState(false);
@@ -48,12 +49,30 @@ const NavigationBar = () => {
               {/* Dropdown Menu */}
               {isDropdownVisible && (
                 <div className="dropdown-content absolute right-2 top-[35px] mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-20">
-                  <NavLink
-                    to={ROUTE_LOGIN}
-                    className="block px-4 py-2 text-sm text-gray-700"
-                  >
-                    Login
-                  </NavLink>
+                  {sessionStorage.getItem('accessToken') ? (
+                    // If user is logged in, show Logout option
+                    <button
+                       // Assuming you have a route for logout
+                      className="block px-4 py-2 text-sm text-gray-700"
+                      onClick={() => {
+                        // Handle logout logic here, e.g., clearing session storage
+                        sessionStorage.removeItem('accessToken');
+                        // Optionally, redirect user or refresh the page
+                        toast.success("Logged out successfully");
+                        window.location.reload();
+                      }}
+                    >
+                      Logout
+                    </button>
+                  ) : (
+                    // If user is not logged in, show Login option
+                    <NavLink
+                      to={ROUTE_LOGIN}
+                      className="block px-4 py-2 text-sm text-gray-700"
+                    >
+                      Login
+                    </NavLink>
+                  )}
                   {/* Add more dropdown items here */}
                 </div>
               )}

@@ -41,6 +41,7 @@ const LoginPage = () => {
     if (response && response.status === "OK" && response.data) {
       toast.success(response.message || "Login successful");
       dispatch(setUserInfo(response.data));
+      sessionStorage.setItem('accessToken', response.data.accessToken ?? "");
       navigate("/");
     } else if (response && response.error) {
       toast.error(response.error);

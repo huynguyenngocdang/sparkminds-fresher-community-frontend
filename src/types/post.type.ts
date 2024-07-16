@@ -1,3 +1,5 @@
+import { EPostType } from "./enums";
+
 export interface IPostItemProps {
     title: string;
     content: string;
@@ -18,6 +20,6 @@ export interface IDislikeToggleProps {
 export type TCreatePost = {
     title: string;
     content?: string;
-    image_url?: string;
-    post_type: EPostType;
+    imageUrl?: string;
+    postType: EPostType;
 }

@@ -5,8 +5,13 @@ interface UserState {
   userInfo: User;
 }
 
-const initialState = {
-  userInfo: {},
+const initialState: UserState = {
+  userInfo: {
+    accessToken: "",
+    username: "",
+    userId: "",
+    roles: [{ role: "" }],
+  },
 };
 
 export const setUserInfo = createAction<User>("user/setUserInfo");
