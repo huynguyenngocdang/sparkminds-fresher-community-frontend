@@ -1,9 +1,13 @@
 import { EPostType } from "./enums";
 
 export interface IPostItemProps {
+    id: number;
     title: string;
     content: string;
     likes: number;
+    imageUrl: string | null;
+    author: string;
+    createdDate: string;
   }
 
   

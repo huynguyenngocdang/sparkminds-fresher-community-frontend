@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { TCreatePost } from "types/post.type";
-import {  TCommonPostResponse, TCommonResponse } from "types/response.type";
+import {  TCommonResponse } from "types/response.type";
 import { createAxiosConfig } from "./apiConfig";
 
 export async function createPost(data: TCreatePost): Promise<AxiosResponse<TCommonResponse> | undefined> {
@@ -23,16 +23,31 @@ export async function createPost(data: TCreatePost): Promise<AxiosResponse<TComm
   }
 }
 
-export async function getAllPost(): Promise<AxiosResponse<TCommonResponse> | undefined> {
-    try {
-        const config = createAxiosConfig();
-        const response = await axios.get<TCommonResponse>('http://localhost:8080/api/posts', config);
+export async function getAllPost(page: number): Promise<AxiosResponse<TCommonResponse> | undefined> {
+  try {
+      const config = createAxiosConfig();
+      // Include the page parameter in the request URL
+      const response = await axios.get<TCommonResponse>(`http://localhost:8080/api/posts?page=${page}`, config);
 
-        return response;
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
+      return response;
+  } catch (error) {
+      if (axios.isAxiosError(error)) {
           return error.response;
-        }
-        // Optionally, handle or throw non-Axios errors as well
       }
+      // Optionally, handle or throw non-Axios errors as well
+  }
+}
+
+export async function getPostById(id: number): Promise<AxiosResponse<TCommonResponse> | undefined> {
+  try {
+      const config = createAxiosConfig();
+      const response = await axios.get<TCommonResponse>(`http://localhost:8080/api/posts/${id}`, config);
+
+      return response;
+  } catch (error) {
+      if (axios.isAxiosError(error)) {
+          return error.response;
+      }
+      // Optionally, handle or throw non-Axios errors as well
+  }
 }

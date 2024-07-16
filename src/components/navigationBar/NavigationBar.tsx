@@ -50,14 +50,10 @@ const NavigationBar = () => {
               {isDropdownVisible && (
                 <div className="dropdown-content absolute right-2 top-[35px] mt-2 py-2 w-48 bg-white rounded-md shadow-xl z-20">
                   {sessionStorage.getItem('accessToken') ? (
-                    // If user is logged in, show Logout option
                     <button
-                       // Assuming you have a route for logout
                       className="block px-4 py-2 text-sm text-gray-700"
-                      onClick={() => {
-                        // Handle logout logic here, e.g., clearing session storage
+                      onClick={() => {                    
                         sessionStorage.removeItem('accessToken');
-                        // Optionally, redirect user or refresh the page
                         toast.success("Logged out successfully");
                         window.location.reload();
                       }}

@@ -6,6 +6,7 @@ import LoginPage from "pages/auth/LoginPage";
 import RegisterPage from "pages/auth/RegisterPage";
 import { ROUTE_LOGIN, ROUTE_POST_CREATE, ROUTE_REGISTER } from "constants/WebPath";
 import CreatePost from "pages/posts/CreatePost";
+import PostDetails from "pages/posts/PostDetails";
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
           <Route path={ROUTE_LOGIN} element={<LoginPage />} />
           <Route path={ROUTE_REGISTER} element={<RegisterPage />} />
           <Route path={ROUTE_POST_CREATE} element={<CreatePost />} />
+          <Route path="/posts/:id" element={<PostDetails />} />
         </Routes>
       </div>
     </Router>

@@ -10,13 +10,10 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import * as yup from "yup";
 import { storage } from "../../firebase/firebase-config";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { useSelector } from "react-redux";
-import { RootState } from "redux/store";
-import { title } from "process";
 import { EPostType } from "types/enums";
 import { createPost } from "api/postApi";
 import { toast } from "react-toastify";
-import { TCommonResponse } from "types/response.type";
+
 
 interface FormData {
   title: string;

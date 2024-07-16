@@ -19,6 +19,9 @@ export type TCommonPost = {
     empty: boolean;
 };
 
+
+
+
 export type TCommonPostResponse = {
     data: {
         message: string;
@@ -43,8 +46,14 @@ export type Post = {
     createdDate: string;
     like: boolean;
     dislike: boolean;
-    delete: boolean;
+    isDelete: boolean;
 };
+
+export type Comment = {
+    id: number;
+    comment: string;
+    author: string;
+}
 
 export type Sort = {
     empty: boolean;
